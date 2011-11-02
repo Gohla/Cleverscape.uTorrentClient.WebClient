@@ -113,7 +113,7 @@ namespace Cleverscape.UTorrentClient.WebClient
 
             CustomBinding uTorrentCustomBinding = new CustomBinding(
                 new WebMessageEncodingBindingElement() { ContentTypeMapper = new JsonContentTypeMapper() },
-                new HttpTransportBindingElement() { ManualAddressing = true, AuthenticationScheme = System.Net.AuthenticationSchemes.Basic, Realm = "uTorrent", AllowCookies = false }
+                new HttpTransportBindingElement() { ManualAddressing = true, AuthenticationScheme = System.Net.AuthenticationSchemes.Basic, Realm = "uTorrent", AllowCookies = false, KeepAliveEnabled = true }
                 );
             EndpointAddress uTorrentEndpointAddress = new EndpointAddress(_uTorrentAddress);
 
@@ -123,10 +123,10 @@ namespace Cleverscape.UTorrentClient.WebClient
             ChannelFactory.Credentials.UserName.Password = _uTorrentPassword;
             ServiceClient = ChannelFactory.CreateChannel();
 
-			this.getToken();
+			this.GetToken();
         }
 
-        public void getToken()
+        private void GetToken()
         {
 			Stream body = ServiceClient.getToken();
 			string result = null;
