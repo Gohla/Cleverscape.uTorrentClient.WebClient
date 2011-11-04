@@ -444,6 +444,19 @@ namespace Cleverscape.UTorrentClient.WebClient
             ServiceClient = null;
             ChannelFactory.Close();
             ChannelFactory = null;
+            if(_autoUpdateTimerSync != null)
+            {
+                _autoUpdateTimerSync.Stop();
+                _autoUpdateTimerSync.Dispose();
+            }
+            _autoUpdateTimerSync = null;
+            if(_autoUpdateTimerAsync != null)
+            {
+                _autoUpdateTimerAsync.Stop();
+                _autoUpdateTimerAsync.Dispose();
+            }
+            _autoUpdateTimerAsync = null;
+            _token = null;
         }
 
         #endregion
@@ -642,6 +655,9 @@ namespace Cleverscape.UTorrentClient.WebClient
 
         private void GetTorrentsAndLabelsFresh()
         {
+            if(_token == null)
+                return;
+
 			TorrentsAndLabels CurrentTorrents = ServiceClient.GetAllTorrentsAndLabels(_token);
 
 			_torrents = new TorrentCollection(this);
