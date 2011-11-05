@@ -663,7 +663,7 @@ namespace Cleverscape.UTorrentClient.WebClient
 			_torrents = new TorrentCollection(this);
 			_torrents.Parse(CurrentTorrents.Torrents, true);
 
-			_labels = new TorrentLabelCollection();
+			_labels = new TorrentLabelCollection(this);
 			_labels.Parse(CurrentTorrents.Labels);
 
 			SetCache(CurrentTorrents.CacheID);
