@@ -897,6 +897,15 @@ namespace Cleverscape.UTorrentClient.WebClient
         }
 
         /// <summary>
+        /// Sets the label of this torrent.
+        /// </summary>
+        /// <param name="NewLabel">The new label of this torrent</param>
+        public void SetLabel(string NewLabel)
+        {
+            ParentCollection.ParentClient.SetTorrentProperty(this, "label", NewLabel);
+        }
+
+        /// <summary>
         /// Remove the torrent
         /// </summary>
         /// <param name="RemoveData">Whether or not to remove the data downloaded</param>
