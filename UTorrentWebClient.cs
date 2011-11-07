@@ -611,9 +611,11 @@ namespace Cleverscape.UTorrentClient.WebClient
         {
             if (_torrentsAndLabelsLastUpdated == null || _torrentsAndLabelsLastUpdated.Add(MinimumTimeBetweenUpdates) <= DateTime.Now || ForceUpdate)
             {
-                if (_torrentsAndLabelsListStored && _cacheID > 0)
+                if(_torrentsAndLabelsListStored && _cacheID > 0)
                 {
-                    GetTorrentsAndLabelsCached();
+                    // This bugs after removing a torrent, use non cached version for now..
+                    //GetTorrentsAndLabelsCached();
+                    GetTorrentsAndLabelsUpdate();
                 }
                 else
                 {
@@ -634,7 +636,7 @@ namespace Cleverscape.UTorrentClient.WebClient
         {
             UpdatedTorrentsAndLabels UpdatedTorrents = ServiceClient.GetUpdatedTorrentsAndLabels(_cacheID.ToString(), _token);
 
-            _torrents.Parse(UpdatedTorrents.Torrents, UpdatedTorrents.RemovedTorrents, UpdatedTorrents.ChangedTorrents);
+            _torrents.Parse(null, UpdatedTorrents.RemovedTorrents, UpdatedTorrents.ChangedTorrents);
             _labels.Parse(UpdatedTorrents.Labels);
             SetCache(UpdatedTorrents.CacheID);
         }

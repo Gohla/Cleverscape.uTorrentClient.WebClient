@@ -65,7 +65,8 @@ namespace Cleverscape.UTorrentClient.WebClient
         {
             if (RemovedTorrentsToParse == null || ChangedTorrentsToParse == null)
             {
-                Parse(TorrentsToParse, false);
+                if(TorrentsToParse != null)
+                    Parse(TorrentsToParse, false);
             }
             else
             {
