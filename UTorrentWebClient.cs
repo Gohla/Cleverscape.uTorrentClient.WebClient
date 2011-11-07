@@ -113,7 +113,7 @@ namespace Cleverscape.UTorrentClient.WebClient
 
             CustomBinding uTorrentCustomBinding = new CustomBinding(
                 new WebMessageEncodingBindingElement() { ContentTypeMapper = new JsonContentTypeMapper() },
-                new HttpTransportBindingElement() { ManualAddressing = true, AuthenticationScheme = System.Net.AuthenticationSchemes.Basic, Realm = "uTorrent", AllowCookies = false, KeepAliveEnabled = true, UseDefaultWebProxy = false }
+                new HttpTransportBindingElement() { ManualAddressing = true, AuthenticationScheme = System.Net.AuthenticationSchemes.Basic, Realm = "uTorrent", AllowCookies = true, KeepAliveEnabled = true, UseDefaultWebProxy = false }
                 );
             EndpointAddress uTorrentEndpointAddress = new EndpointAddress(_uTorrentAddress);
 
@@ -413,7 +413,7 @@ namespace Cleverscape.UTorrentClient.WebClient
         {
             CredentialCache uTorrentCredentials = new CredentialCache();
             uTorrentCredentials.Add(new Uri(_uTorrentAddress), "Basic", new NetworkCredential(_uTorrentUserName, _uTorrentPassword));
-            HttpWebRequest PostFileRequest = (HttpWebRequest)(HttpWebRequest.Create(String.Format("{0}?action=add-file", _uTorrentAddress)));
+            HttpWebRequest PostFileRequest = (HttpWebRequest)(HttpWebRequest.Create(String.Format("{0}?token={1}&action=add-file", _uTorrentAddress, _token)));
             PostFileRequest.KeepAlive = false;
             PostFileRequest.Credentials = uTorrentCredentials;
             string BoundaryString = Guid.NewGuid().ToString("N");
