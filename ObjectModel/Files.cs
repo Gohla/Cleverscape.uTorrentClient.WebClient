@@ -11,9 +11,8 @@ namespace Cleverscape.UTorrentClient.WebClient
     public class TorrentFile
     {
         private int _priorityInteger;
-        
+
         internal TorrentFileCollection ParentCollection;
-        internal int Index;
 
         #region Constructor and parsing data from Web UI
 
@@ -39,6 +38,11 @@ namespace Cleverscape.UTorrentClient.WebClient
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Index of the file
+        /// </summary>
+        public int Index { get; private set; }
 
         /// <summary>
         /// The name of the file
@@ -161,7 +165,7 @@ namespace Cleverscape.UTorrentClient.WebClient
 
         internal void ParseFiles(object[] Files, Torrent ParentTorrent)
         {
-            if (Files.Length != 2 || !(Files[1] is object[]))
+            if (Files == null || Files.Length != 2 || !(Files[1] is object[]))
             {
                 throw new FormatException("The array of file data was not in the expected format.");
             }

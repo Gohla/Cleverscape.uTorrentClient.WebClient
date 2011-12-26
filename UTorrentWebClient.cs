@@ -8,18 +8,19 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Web;
-using Cleverscape.UTorrentClient.WebClient.ServiceDefinition;
-using System.IO;
-using System.Net;
-using System.Windows.Forms;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Timers;
+using System.Windows.Forms;
 using System.Windows.Threading;
+using Cleverscape.UTorrentClient.WebClient.ServiceDefinition;
 
 namespace Cleverscape.UTorrentClient.WebClient
 {
@@ -295,8 +296,20 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="Torrent">The torrent to start</param>
         public void TorrentStart(Torrent Torrent)
         {
-            ServiceClient.StartTorrent(Torrent.Hash, _token);
-            GetTorrentsAndLabels(true);
+            if(_token == null)
+                return;
+
+            try
+            {
+                ServiceClient.StartTorrent(Torrent.Hash, _token);
+                GetTorrentsAndLabels(true);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         /// <summary>
@@ -305,8 +318,20 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="Torrent">The torrent to stop</param>
         public void TorrentStop(Torrent Torrent)
         {
-            ServiceClient.StopTorrent(Torrent.Hash, _token);
-            GetTorrentsAndLabels(true);
+            if(_token == null)
+                return;
+
+            try
+            {
+                ServiceClient.StopTorrent(Torrent.Hash, _token);
+                GetTorrentsAndLabels(true);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         /// <summary>
@@ -315,8 +340,20 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="Torrent">The torrent to pause</param>
         public void TorrentPause(Torrent Torrent)
         {
-            ServiceClient.PauseTorrent(Torrent.Hash, _token);
-            GetTorrentsAndLabels(true);
+            if(_token == null)
+                return;
+
+            try
+            {
+                ServiceClient.PauseTorrent(Torrent.Hash, _token);
+                GetTorrentsAndLabels(true);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         /// <summary>
@@ -325,8 +362,20 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="Torrent">The torrent to un-pause</param>
         public void TorrentUnPause(Torrent Torrent)
         {
-            ServiceClient.UnPauseTorrent(Torrent.Hash, _token);
-            GetTorrentsAndLabels(true);
+            if(_token == null)
+                return;
+
+            try
+            {
+                ServiceClient.UnPauseTorrent(Torrent.Hash, _token);
+                GetTorrentsAndLabels(true);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         /// <summary>
@@ -335,8 +384,20 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="Torrent">The torrent to force start</param>
         public void TorrentForceStart(Torrent Torrent)
         {
-            ServiceClient.ForceStartTorrent(Torrent.Hash, _token);
-            GetTorrentsAndLabels(true);
+            if(_token == null)
+                return;
+
+            try
+            {
+                ServiceClient.ForceStartTorrent(Torrent.Hash, _token);
+                GetTorrentsAndLabels(true);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         /// <summary>
@@ -345,8 +406,20 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="Torrent">The torrent to re-check</param>
         public void TorrentReCheck(Torrent Torrent)
         {
-            ServiceClient.RecheckTorrent(Torrent.Hash, _token);
-            GetTorrentsAndLabels(true);
+            if(_token == null)
+                return;
+
+            try
+            {
+                ServiceClient.RecheckTorrent(Torrent.Hash, _token);
+                GetTorrentsAndLabels(true);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         /// <summary>
@@ -356,15 +429,27 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="RemoveData">Whether or not the data is removed</param>
         public void TorrentRemove(Torrent Torrent, bool RemoveData)
         {
-            if (RemoveData)
+            if(_token == null)
+                return;
+
+            try
             {
-                ServiceClient.RemoveTorrentAndData(Torrent.Hash, _token);
+                if(RemoveData)
+                {
+                    ServiceClient.RemoveTorrentAndData(Torrent.Hash, _token);
+                }
+                else
+                {
+                    ServiceClient.RemoveTorrent(Torrent.Hash, _token);
+                }
+                GetTorrentsAndLabels(true);
             }
-            else
+            catch(System.ServiceModel.ProtocolException e)
             {
-                ServiceClient.RemoveTorrent(Torrent.Hash, _token);
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
             }
-            GetTorrentsAndLabels(true);
         }
 
         /// <summary>
@@ -382,8 +467,20 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="Url">The url to download the .torrent file</param>
         public void AddTorrentFromUrl(string Url)
         {
-            ServiceClient.AddTorrentFromUrl(Url, _token);
-            GetTorrentsAndLabels(true);
+            if(_token == null)
+                return;
+
+            try
+            {
+                ServiceClient.AddTorrentFromUrl(Url, _token);
+                GetTorrentsAndLabels(true);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         /// <summary>
@@ -613,7 +710,7 @@ namespace Cleverscape.UTorrentClient.WebClient
             {
                 if(_torrentsAndLabelsListStored && _cacheID > 0)
                 {
-                    // This bugs after removing a torrent, use non cached version for now..
+                    // This can fail after removing a torrent, use the non cached version if it does.
                     //GetTorrentsAndLabelsCached();
                     GetTorrentsAndLabelsUpdate();
                 }
@@ -634,11 +731,23 @@ namespace Cleverscape.UTorrentClient.WebClient
 
         private void GetTorrentsAndLabelsCached()
         {
-            UpdatedTorrentsAndLabels UpdatedTorrents = ServiceClient.GetUpdatedTorrentsAndLabels(_cacheID.ToString(), _token);
+            if(_token == null)
+                return;
 
-            _torrents.Parse(null, UpdatedTorrents.RemovedTorrents, UpdatedTorrents.ChangedTorrents);
-            _labels.Parse(UpdatedTorrents.Labels);
-            SetCache(UpdatedTorrents.CacheID);
+            try
+            {
+                UpdatedTorrentsAndLabels UpdatedTorrents = ServiceClient.GetUpdatedTorrentsAndLabels(_cacheID.ToString(), _token);
+
+                _torrents.Parse(null, UpdatedTorrents.RemovedTorrents, UpdatedTorrents.ChangedTorrents);
+                _labels.Parse(UpdatedTorrents.Labels);
+                SetCache(UpdatedTorrents.CacheID);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         private void GetTorrentsAndLabelsUpdate()
@@ -648,11 +757,23 @@ namespace Cleverscape.UTorrentClient.WebClient
 
         private void GetTorrentsAndLabelsUpdate(TorrentsList TorrentsToProcess)
         {
-            TorrentsAndLabels CurrentTorrents = ServiceClient.GetAllTorrentsAndLabels(_token);
+            if(_token == null)
+                return;
 
-            _torrents.Parse(CurrentTorrents.Torrents, false);
-            _labels.Parse(CurrentTorrents.Labels);
-            SetCache(CurrentTorrents.CacheID);
+            try
+            {
+                TorrentsAndLabels CurrentTorrents = ServiceClient.GetAllTorrentsAndLabels(_token);
+
+                _torrents.Parse(CurrentTorrents.Torrents, false);
+                _labels.Parse(CurrentTorrents.Labels);
+                SetCache(CurrentTorrents.CacheID);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         private void GetTorrentsAndLabelsFresh()
@@ -660,16 +781,24 @@ namespace Cleverscape.UTorrentClient.WebClient
             if(_token == null)
                 return;
 
-			TorrentsAndLabels CurrentTorrents = ServiceClient.GetAllTorrentsAndLabels(_token);
+            try
+            {
+                TorrentsAndLabels CurrentTorrents = ServiceClient.GetAllTorrentsAndLabels(_token);
 
-			_torrents = new TorrentCollection(this);
-			_torrents.Parse(CurrentTorrents.Torrents, true);
+                _torrents = new TorrentCollection(this);
+                _torrents.Parse(CurrentTorrents.Torrents, true);
 
-			_labels = new TorrentLabelCollection(this);
-			_labels.Parse(CurrentTorrents.Labels);
+                _labels = new TorrentLabelCollection(this);
+                _labels.Parse(CurrentTorrents.Labels);
 
-			SetCache(CurrentTorrents.CacheID);
-			
+                SetCache(CurrentTorrents.CacheID);
+            }
+            catch(System.ServiceModel.ProtocolException e)
+            {
+                // Token possibly expired, get new token.
+                Trace.TraceError(e.Message + e.StackTrace);
+                GetToken();
+            }
         }
 
         private void SetCache(string CacheIDString)
