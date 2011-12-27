@@ -489,24 +489,14 @@ namespace Cleverscape.UTorrentClient.WebClient
         /// <param name="FileName">The name of the file to add</param>
         public void AddTorrent(string FileName)
         {
-            AddTorrent(File.OpenRead(FileName), FileName);
-        }
-
-        /// <summary>
-        /// Adds a torrent to uTorrent from a stream
-        /// </summary>
-        /// <param name="TorrentStream">The stream containing the torrent to add</param>
-        public void AddTorrent(Stream TorrentStream)
-        {
-            AddTorrent(TorrentStream, "C:\\Torrent.torrent");
+            AddTorrent(File.OpenRead(FileName));
         }
 
         /// <summary>
         /// Adds a torrent to uTorrent from a stream, uploading it with a specified file name
         /// </summary>
         /// <param name="TorrentStream">The stream containing the torrent to add</param>
-        /// <param name="FileName">The filename to upload the torrent using</param>
-        public void AddTorrent(Stream TorrentStream, string FileName)
+        public void AddTorrent(Stream TorrentStream)
         {
             CredentialCache uTorrentCredentials = new CredentialCache();
             uTorrentCredentials.Add(new Uri(_uTorrentAddress), "Basic", new NetworkCredential(_uTorrentUserName, _uTorrentPassword));
@@ -522,17 +512,16 @@ namespace Cleverscape.UTorrentClient.WebClient
                 byte[] FileBytes = new byte[TorrentStream.Length];
                 TorrentStream.Read(FileBytes, 0, FileBytes.Length);
 
-                Writer.Write(Encoding.ASCII.GetBytes(String.Format("--{0}\r\nContent-Disposition: form-data; name=\"torrent_file\"; filename=\"{0}\"\r\nContent-Type: application/x-bittorrent\r\n\r\n", BoundaryString, FileName)));
+                Writer.Write(Encoding.ASCII.GetBytes(String.Format("--{0}\r\nContent-Disposition: form-data; name=\"torrent_file\"; filename=\"{0}\"\r\nContent-Type: application/x-bittorrent\r\n\r\n", BoundaryString)));
                 Writer.Write(FileBytes, 0, FileBytes.Length);
                 Writer.Write(Encoding.ASCII.GetBytes(String.Format("\r\n--{0}--\r\n", BoundaryString)));
             }
 
+            TorrentStream.Close();
             HttpWebResponse Response = (HttpWebResponse)PostFileRequest.GetResponse();
             Response.Close();
-            PostFileRequest.Abort();
             GetTorrentsAndLabels(true);
         }
-
 
         #region IDisposable implementation
 

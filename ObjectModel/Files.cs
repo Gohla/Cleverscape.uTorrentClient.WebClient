@@ -24,9 +24,9 @@ namespace Cleverscape.UTorrentClient.WebClient
 
         internal void UpdateValuesFromArray(object[] FileArray, int Index)
         {
-            if (FileArray.Length != 4 || !(FileArray[0] is string) || !(FileArray[1] is int || FileArray[1] is long) || !(FileArray[2] is int || FileArray[2] is long) || !(FileArray[3] is int))
+            if (FileArray.Length < 4 || !(FileArray[0] is string) || !(FileArray[1] is int || FileArray[1] is long) || !(FileArray[2] is int || FileArray[2] is long) || !(FileArray[3] is int))
             {
-                throw new FormatException("The array of file data was not in the expected format.");
+                throw new FormatException("The array of file data was not in the expected format, it contains less than 4 elements or has incorrect data types.");
             }
             Name = (string)FileArray[0];
             SizeTotalBytes = Convert.ToInt64(FileArray[1]);

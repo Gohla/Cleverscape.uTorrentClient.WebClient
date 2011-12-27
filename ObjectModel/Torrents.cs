@@ -63,9 +63,9 @@ namespace Cleverscape.UTorrentClient.WebClient
             bool CallStopped = false;
             bool CallPaused = false;
             bool CallUnPaused = false;
-            if (InputValues.Length != 19)
+            if (InputValues.Length < 19)
             {
-                throw new FormatException("The array of torrent data was not in the expected format.");
+                throw new FormatException("The array of torrent data was not in the expected format, it contains less than 19 elements.");
             }
             if (Hash != InputValues[0])
             {
